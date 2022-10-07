@@ -69,7 +69,6 @@ class PdfStapler:
             pos = self.files_listbox.curselection()[0]
             if pos == 0:
                 return
-            print(pos)
             text = self.files_listbox.get(pos)
             self.files_listbox.delete(pos)
             self.files_listbox.insert(pos-1, text)

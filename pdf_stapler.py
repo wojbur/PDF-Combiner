@@ -1,15 +1,17 @@
-from email.charset import add_alias
-from importlib.resources import path
+"""A simple tkinter GUI app for merging PDF files using PyPDF2"""
+
 import tkinter as tk
 import tkinter.filedialog as fd
 import PyPDF2
 from pathlib import Path
 
+# Define display window
 window = tk.Tk()
 window.iconbitmap(Path('Icons', 'stapler.ico'))
 window.title('PDF Stapler')
 window.resizable(0, 0)
 
+# Define Stapler class
 class PdfStapler:
     def __init__(self, main):
         self.file_list = []
@@ -19,6 +21,7 @@ class PdfStapler:
         self.frame1.grid(row=0, column=0)
         self.frame2.grid(row=0, column=1)
 
+        # Define buttons
         self.add_button_image = tk.PhotoImage(file=Path('Icons', 'browse.png'))
         self.add_files_button = tk.Button(self.frame2, image=self.add_button_image, command=self.add_files, width=25, height=25, borderwidth=2)
         self.add_files_button.grid(row=0, column=0, padx=2, pady=2)
@@ -39,6 +42,7 @@ class PdfStapler:
         self.save_button = tk.Button(self.frame2, image=self.save_button_image, command=self.staple_save, width=25, height=25, borderwidth=2)
         self.save_button.grid(row=4, column=0, padx=2, pady=2)
 
+        # Define listbox with scrollbarr
         self.files_listbox = tk.Listbox(self.frame1, width=40, height=20, selectmode=tk.SINGLE)
         self.files_listbox.grid(row=0, column=1)
 
@@ -48,6 +52,7 @@ class PdfStapler:
         self.files_listbox.config(yscrollcommand=self.scrollbar)
 
     def add_files(self):
+        """Open dialog window and select files"""
         root = tk.Tk()
         root.withdraw()
         self.selected_files = fd.askopenfilenames(parent=root, title='select files', filetypes=[('PDF', '.pdf')])
@@ -58,6 +63,7 @@ class PdfStapler:
         self.populate_listbox(self.files_listbox, self.file_list)
     
     def remove_file(self):
+        """Remove selected file from the list"""
         if self.files_listbox.curselection():
             pos = self.files_listbox.curselection()[0]
             self.file_list.pop(pos)
@@ -65,6 +71,7 @@ class PdfStapler:
             self.files_listbox.selection_set(pos)
     
     def move_up(self):
+        """Move selected file up the list"""
         if self.files_listbox.curselection():
             pos = self.files_listbox.curselection()[0]
             if pos == 0:
@@ -76,6 +83,7 @@ class PdfStapler:
             self.files_listbox.selection_set(pos-1)
 
     def move_down(self):
+        """Move selected file down the list"""
         if self.files_listbox.curselection():
             pos = self.files_listbox.curselection()[0]
             if pos+1 >= len(self.file_list):
@@ -87,6 +95,7 @@ class PdfStapler:
             self.files_listbox.selection_set(pos+1)
     
     def get_save_dir(self):
+        """Open dialog window and specify output directory"""
         root = tk.Tk()
         root.withdraw()
         output_dir = fd.asksaveasfilename(defaultextension=".pdf", filetypes=[('PDF', '.pdf')])
@@ -94,6 +103,7 @@ class PdfStapler:
         return output_dir
     
     def staple_save(self):
+        """Merge PDFs and save output file"""
         if len(self.file_list) == 0:
             return
         output_dir = self.get_save_dir()
@@ -104,9 +114,12 @@ class PdfStapler:
         
     
     def populate_listbox(self, lstbox, files):
+        """Populate tkinter listbox with filenames from list"""
         self.files_listbox.delete(0, tk.END)
         for file in files:
             lstbox.insert(tk.END, file[1])
 
+# create app object
 stapler = PdfStapler(window)
+
 window.mainloop()
